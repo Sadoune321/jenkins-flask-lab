@@ -360,20 +360,24 @@ les vérifications HTTP réussissent.
 \caption{Point de contrôle \texttt{/health} : réponse \texttt{\{"status":"ok"\}}.}
 \end{figure}
 
-Extrait de la sortie console d'un build réussi (build 7) :
+Sortie console condensée d'un build réussi (build 7) :
 
 \begin{lstlisting}
-Checking out Revision fe1a2252a304087108c619a3a52ce393e8987edf (refs/remotes/origin/main)
-+ docker build -t jenkins-flask-lab:7 .
-Successfully tagged jenkins-flask-lab:7
-tests/test_app.py::test_home PASSED                                      [ 50%]
-tests/test_app.py::test_health PASSED                                    [100%]
-+ curl --fail --retry 10 --retry-delay 2 http://jenkins-flask-app:8000/health
-{"status":"ok"}
-+ curl --fail http://jenkins-flask-app:8000/
-<h1>Jenkins CI/CD Lab</h1><p>Version: 7</p>
-+ curl --fail http://host.docker.internal:8081/health
-{"status":"ok"}
+Started by user admin
+Checking out Revision fe1a225 (refs/remotes/origin/main)
+[Checkout] Source code is available in the workspace.
+[Build]    + docker build -t jenkins-flask-lab:7 .
+           Successfully tagged jenkins-flask-lab:7
+[Test]     + docker run --rm jenkins-flask-lab:7 pytest -v
+           tests/test_app.py::test_home PASSED      [ 50%]
+           tests/test_app.py::test_health PASSED    [100%]
+           2 passed in 0.30s
+[Deploy]   + docker rm -f jenkins-flask-app || true
+           + docker run -d --network jenkins-net --name jenkins-flask-app
+             -p 8081:8000 -e APP_VERSION=7 jenkins-flask-lab:7
+[Verify]   + curl --fail --retry 10 --retry-delay 2 .../health
+           {"status":"ok"}
+           <h1>Jenkins CI/CD Lab</h1><p>Version: 7</p>
 Pipeline completed successfully.
 Finished: SUCCESS
 \end{lstlisting}
