@@ -1,37 +1,32 @@
 @echo off
-REM Compile le rapport LaTeX en PDF.
+REM Compile les rapports LaTeX (FR + EN) en PDF.
 REM Utilisation : double-cliquer ou executer :  compiler_rapport.bat
 
 cd /d "%~dp0"
+set ENGINE=
 
-where pdflatex >nul 2>nul
-if %errorlevel%==0 (
-    echo [1/2] pdflatex...
-    pdflatex -interaction=nonstopmode RAPPORT_Lab07_Sadoune_Fadjr.tex
-    pdflatex -interaction=nonstopmode RAPPORT_Lab07_Sadoune_Fadjr.tex
-    goto done
-)
+where pdflatex >nul 2>nul && set ENGINE=pdflatex
+if not defined ENGINE where xelatex >nul 2>nul && set ENGINE=xelatex
+if not defined ENGINE where lualatex >nul 2>nul && set ENGINE=lualatex
 
-where xelatex >nul 2>nul
-if %errorlevel%==0 (
-    echo [1/2] xelatex...
-    xelatex -interaction=nonstopmode RAPPORT_Lab07_Sadoune_Fadjr.tex
-    xelatex -interaction=nonstopmode RAPPORT_Lab07_Sadoune_Fadjr.tex
-    goto done
-)
-
-where lualatex >nul 2>nul
-if %errorlevel%==0 (
-    echo [1/2] lualatex...
-    lualatex -interaction=nonstopmode RAPPORT_Lab07_Sadoune_Fadjr.tex
-    lualatex -interaction=nonstopmode RAPPORT_Lab07_Sadoune_Fadjr.tex
+if defined ENGINE (
+    echo [ENGINE] %ENGINE%
+    if exist RAPPORT_Lab07_Sadoune_Fadjr_EN.tex (
+        %ENGINE% -interaction=nonstopmode RAPPORT_Lab07_Sadoune_Fadjr_EN.tex
+        %ENGINE% -interaction=nonstopmode RAPPORT_Lab07_Sadoune_Fadjr_EN.tex
+    )
+    if exist RAPPORT_Lab07_Sadoune_Fadjr.tex (
+        %ENGINE% -interaction=nonstopmode RAPPORT_Lab07_Sadoune_Fadjr.tex
+        %ENGINE% -interaction=nonstopmode RAPPORT_Lab07_Sadoune_Fadjr.tex
+    )
     goto done
 )
 
 where tectonic >nul 2>nul
 if %errorlevel%==0 (
-    echo [1/2] tectonic...
-    tectonic -X compile RAPPORT_Lab07_Sadoune_Fadjr.tex --keep-logs
+    echo [ENGINE] tectonic
+    if exist RAPPORT_Lab07_Sadoune_Fadjr_EN.tex tectonic -X compile RAPPORT_Lab07_Sadoune_Fadjr_EN.tex
+    if exist RAPPORT_Lab07_Sadoune_Fadjr.tex tectonic -X compile RAPPORT_Lab07_Sadoune_Fadjr.tex
     goto done
 )
 
@@ -40,10 +35,7 @@ echo Installer MiKTeX : https://miktex.org/download
 exit /b 1
 
 :done
-if exist RAPPORT_Lab07_Sadoune_Fadjr.pdf (
-    echo.
-    echo PDF genere : %cd%\RAPPORT_Lab07_Sadoune_Fadjr.pdf
-) else (
-    echo Echec de la compilation, voir le fichier .log
-)
+echo.
+if exist RAPPORT_Lab07_Sadoune_Fadjr_EN.pdf echo PDF EN : %cd%\RAPPORT_Lab07_Sadoune_Fadjr_EN.pdf
+if exist RAPPORT_Lab07_Sadoune_Fadjr.pdf echo PDF FR : %cd%\RAPPORT_Lab07_Sadoune_Fadjr.pdf
 pause
